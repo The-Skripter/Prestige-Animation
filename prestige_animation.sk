@@ -1,0 +1,90 @@
+# ##################################################################
+# ##################################################################
+# ##################################################################
+# 
+# Created by The Skripter
+# 
+# ##################################################################
+# ##################################################################
+# ##################################################################
+
+on load:
+
+    send " " to console
+    send "&7&m      &7[ &bPrestige Animation &7]&m      " to console
+    send "&bAuthor: &fThe Skripter" to console
+    send "&bVersion: &f1.0" to console
+    send "&bContact: &f@theskripter (discord)" to console
+    send " " to console
+
+# ##################################################################
+# ##################################################################
+# ##################################################################
+# 
+# Animation Function
+# 
+# ##################################################################
+# ##################################################################
+# ##################################################################
+
+function prestige_animation(player: player, location: location, title: string, subtitle: text, color1: color, color2: color, color3: color, color4: color): # prestige_animation(player, event-block's location, cobblestone, "You have prestiged") <-- Example
+
+    # Setting location to above the block
+    add 0.5 to y-coord of {_location}
+
+    # First wave of particles
+    loop 3 times:
+        if loop-value = 1:
+            set {_particle} to {_color1}
+        if loop-value = 2:
+            set {_particle} to {_color2}
+        if loop-value = 3:
+            set {_particle} to {_color3}
+        set {_x} to 10
+        delete {_locs::*}
+        loop 10 times:
+            loop 48 times:
+                set {_v} to spherical vector with radius ({_x} / 10), yaw loop-value-3*16 and pitch 0
+                add ({_location} ~ {_v}) to {_locs::*}
+            draw 1 of dust using dustOption({_particle}, 0.5) at {_locs::*} with force
+            subtract 1 from {_x}
+            wait 3 ticks     
+
+    # Sending Title
+    send title {_title} with subtitle {_subtitle} to {_player}
+    play sound "ENTITY_DRAGON_FLAP" to {_player}
+
+    # Second wave of particles
+    delete {_locs::*}
+    loop 22 times:
+        set {_y} to 0.1
+        loop 20 times:
+            set {_v} to spherical vector with radius 0.6, yaw loop-value-1*16 and pitch 0
+            set {_eyes} to location of {_player}'s eyes
+            subtract {_y} from y-coord of {_eyes}
+            add ({_eyes} ~ vector(0,0.5,0)) ~ {_v} to {_locs::*}
+            add 0.1 to {_y}
+    
+    draw 1 of dust using dustOption({_color4}, 1) at {_locs::*} with force
+
+# ##################################################################
+# ##################################################################
+# ##################################################################
+# 
+# Animation Command
+# 
+# ##################################################################
+# ##################################################################
+# ##################################################################
+
+command /prestige_animation_help:
+    permission: op
+    permission message: &cNo permission!
+    usage: Please use &c/prestige_animation_help!
+    trigger:
+        play sound "BLOCK_NOTE_BLOCK_BIT"
+        send " "
+        send "&c&lPrestige Animation Help"
+        send "&fFormat:"
+        send "&8| &fprestige_animation(player, [location], [title], [subtitle], [first color], [second color], [third color], [fourth color]"
+        send " "
